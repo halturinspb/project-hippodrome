@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <Properties>
+        <Property name="LOG_DIR">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Настройка вывода логов в консоль -->
+        <RollingFile name="RollingFileAppender" fileName="${LOG_DIR}/hippodrome.log" filePattern="${LOG_DIR}/hippodrome.%d{yyyy-MM-dd-HH-mm}.log">
+            <!--
+              %d{yyyy-MM-dd HH:mm:ss,SSS} - Выведет дату с миллисекундами через запятую
+              %-5level - Уровень логирования (например, INFO)
+              %c{1} - Короткое имя класса без пакетов (Main)
+              %msg%n - Само сообщение и перенос строки
+            -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %c{1}: %msg%n"/>
+
+            <Policies>
+                <!-- Ротация логов каждый день (зависит от паттерна %d в filePattern) -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+
+            <DefaultRolloverStrategy>
+                <!--
+                  При ротации Log4j2 заглянет в папку logs
+                  maxDepth="1" означает искать только в этой папке, не заходя в подпапки
+                -->
+                <Delete basePath="${LOG_DIR}" maxDepth="1">
+                    <IfFileName glob="hippodrome.*.log" />
+                    <IfLastModified age="7d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="all">
+            <AppenderRef ref="RollingFileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
